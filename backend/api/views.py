@@ -6,8 +6,10 @@ from rest_framework.generics import ListAPIView,ListCreateAPIView,RetrieveAPIVie
 from blog.models import Articles
 from .serializers import ArticleSerializer,UserSerializer
 from django.contrib.auth.models import User
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from .permissions import IsSuperUser,IsAuthorOrReadOnly,IsStaffOrReadOnly,IsSuperuserOrStaffReadOnly
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 class ArticleListView(ListCreateAPIView):
     queryset=Articles.objects.all()
@@ -32,3 +34,11 @@ class ArticleDetailView_slug(RetrieveUpdateDestroyAPIView):
     queryset=Articles.objects.all()
     serializer_class=ArticleSerializer
     lookup_field='slug'
+    
+class RevorkeToken(APIView):
+    permission_classes=(IsAuthenticated,)
+    
+    def get(self, request):
+        request.auth.delete()
+        return Response({"method":"you are loged out"},status=204)
+    
